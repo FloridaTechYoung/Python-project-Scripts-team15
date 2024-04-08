@@ -49,8 +49,8 @@ def main():
             if user_answer == answer:
                 points += max(0, 5 - int(time_taken))  # Maximum bonus: 5 points
         print(f"Round {round_number} over! Total points: {points}")
-        print(f"Next round starts in 3 seconds...")
-        time.sleep(3)
+        if round_number < 5:
+            time.sleep(3)
         round_number += 1
         num_integers += 1  # Increase number of questions for the next round
     
