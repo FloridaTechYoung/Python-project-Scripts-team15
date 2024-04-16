@@ -1,59 +1,90 @@
 import random
 import time
 
-def generate_question(num_integers, round_number):
-    """Generate a random arithmetic question."""
-    min = 1
-    max = 20
-    numbers = [random.randint(min, max) for _ in range(num_integers)]
-    if round_number <= 2:
-        operators = [random.choice(['+', '-']) for _ in range(num_integers - 1)]
-    elif round_number <= 4:
-        operators = [random.choice(['+', '-', '*']) for _ in range(num_integers - 1)]
-    else:
-        operators = [random.choice(['+', '-', '*', '/']) for _ in range(num_integers - 1)]
-    # Ensure division results in whole numbers
-    for i, op in enumerate(operators):
-        if op == '/':
-            numbers[i] = numbers[i+1] * random.randint(1, 10)
+
+class Game():
+    start_num_integers = 0
+    def restart(self):
+        self.num_integers = self.start_num_integers
+        self.round_number = 1
+        self.question = None
+        self.question_number = 0
+        self.generated_time = 0
+        self.answer = 0
+        self.points = 0
+
+    def __init__(self, num_integers = 2) -> None:
+        self.start_num_integers = num_integers
+        self.restart()
+
+    def get_operators(self):
+        if self.round_number <= 2:
+            return [random.choice(['+', '-']) for _ in range(self.num_integers - 1)]
+        elif self.round_number <= 4:
+            return [random.choice(['+', '-', '*']) for _ in range(self.num_integers - 1)]
+        else:
+            return [random.choice(['+', '-', '*', '/']) for _ in range(self.num_integers - 1)]
+
+    def generate_question(self):
+        """Generate a random arithmetic question."""
+        min = 1
+        max = 20
+        numbers = [random.randint(min, max) for _ in range(self.num_integers)]
+
+        operators = self.get_operators()
+
+        # Ensure division results in whole numbers
+        for i, op in enumerate(operators):
+            if op == '/':
+                numbers[i] = numbers[i+1] * random.randint(1, 10)
+        
+        self.generated_time = time.time()
+        self.question = " ".join([f"{numbers[i]} {operators[i]}" for i in range(self.num_integers - 1)]) + f" {numbers[-1]} = ? "
+        self.answer = eval("".join([str(numbers[i]) + operators[i] for i in range(self.num_integers - 1)]) + str(numbers[-1]))
+        return self.question
     
-    question = " ".join([f"{numbers[i]} {operators[i]}" for i in range(num_integers - 1)]) + f" {numbers[-1]} = ? "
-    return question, eval("".join([str(numbers[i]) + operators[i] for i in range(num_integers - 1)]) + str(numbers[-1]))
+    def submit_answer(self, answer: float) -> bool:
+        self.question = None
+        if self.answer == answer:
+            self.points += 10
+
+            time_taken = time.time() - self.generated_time
+            self.points += max(0, int(5 - time_taken))
+
+            return True
+        return False
     
+    def next_round(self):
+        self.round_number += 1
+        self.num_integers += 1
 
 def main():
     print("Welcome to the Math Game!")
-    points = 0
-    round_number = 1
+    game = Game()
+
     num_questions = 5
-    num_integers = 2
-    while round_number <= 5:
-        print(f"Round {round_number}:")
+
+    while game.round_number <= 5:
+        print(f"Round {game.round_number}:")
         for _ in range(num_questions):
-            question, answer = generate_question(num_integers, round_number)
+            question = game.generate_question()
             print(question)
-            start_time = time.time()
             user_answer = input("Your answer: ")
-            end_time = time.time()
             try:
                 user_answer = float(user_answer)  # Convert user input to float for division
-                if user_answer == answer:
-                    points += 10
+                if game.submit_answer(user_answer):
                     print("Correct!")
                 else:
                     print("Incorrect!")
             except ValueError:
                 print("Invalid input! Please enter a number.")
-            # Add bonus points for answering quickly
-            time_taken = end_time - start_time
-            if user_answer == answer:
-                points += max(0, 5 - int(time_taken))  # Maximum bonus: 5 points
-        print(f"Round {round_number} over! Total points: {points}")
-        if round_number < 5:
+
+        print(f"Round {game.round_number} over! Total points: {game.points}")
+        if game.round_number < 5:
             time.sleep(3)
-        round_number += 1
-        num_integers += 1  # Increase number of questions for the next round
-    
+
+        game.next_round()
+
     print("Thanks for playing!")
 
 if __name__ == "__main__":

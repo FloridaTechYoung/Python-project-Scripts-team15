@@ -173,7 +173,7 @@ class TicTacToe(ttk.Window):
 
         """
         try:
-            path_image: str = path_resource('media/empty.ico')
+            path_image: str = path_resource('image/empty.ico')
             self.iconbitmap(path_image)
         except Exception:
             pass
