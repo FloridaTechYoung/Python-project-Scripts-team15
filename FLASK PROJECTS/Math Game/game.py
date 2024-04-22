@@ -1,6 +1,8 @@
 import random
 import time
 
+import pytest
+
 
 class Game():
     start_num_integers = 0
@@ -44,6 +46,9 @@ class Game():
         return self.question
     
     def submit_answer(self, answer: float) -> bool:
+        if self.question == None:
+            raise Exception("No question generated")
+
         self.question = None
         if self.answer == answer:
             self.points += 10
@@ -86,6 +91,29 @@ def main():
         game.next_round()
 
     print("Thanks for playing!")
+
+def test_generate_equation():
+    random.seed(123)
+    game = Game()
+    assert "2 + 9 = ? " == game.generate_question()
+
+def test_answer_correct():
+    random.seed(123)
+    game = Game()
+    game.generate_question()
+    assert game.submit_answer(11) == True
+
+def test_answer_incorrect():
+    random.seed(123)
+    game = Game()
+    game.generate_question()
+    assert game.submit_answer(1) == False
+
+def test_answer_no_question():
+    game = Game()
+    
+    with pytest.raises(Exception):
+        game.submit_answer(10)
 
 if __name__ == "__main__":
     main()
