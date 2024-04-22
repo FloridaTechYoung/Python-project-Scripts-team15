@@ -30,7 +30,7 @@ class Game():
     def generate_question(self):
         """Generate a random arithmetic question."""
         min = 1
-        max = 20
+        max = 10
         numbers = [random.randint(min, max) for _ in range(self.num_integers)]
 
         operators = self.get_operators()
@@ -51,10 +51,10 @@ class Game():
 
         self.question = None
         if self.answer == answer:
-            self.points += 10
+            self.points += 100
 
             time_taken = time.time() - self.generated_time
-            self.points += max(0, int(5 - time_taken))
+            self.points += max(0, int(100 - (time_taken * 5)))
 
             return True
         return False
