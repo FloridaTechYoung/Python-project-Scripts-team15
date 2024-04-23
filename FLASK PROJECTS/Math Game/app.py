@@ -51,6 +51,14 @@ def send_question():
 
     return game_state.get_question_resp()
 
+@app.route("/reset", methods=["POST"])
+def reset():
+    id = request.user_agent.string
+
+    game_state = games.setdefault(id, GameState())
+    game_state.game.restart()
+
+    return game_state.get_question_resp()
 
 @app.route("/answer", methods=["POST"])
 def get_answer():

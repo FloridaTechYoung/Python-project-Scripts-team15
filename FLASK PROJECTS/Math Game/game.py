@@ -63,6 +63,7 @@ class Game():
         self.round_number += 1
         self.num_integers += 1
 
+
 def main():
     print("Welcome to the Math Game!")
     game = Game()
