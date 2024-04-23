@@ -95,13 +95,13 @@ def main():
 def test_generate_equation():
     random.seed(123)
     game = Game()
-    assert "2 + 9 = ? " == game.generate_question()
+    assert "1 + 5 = ? " == game.generate_question()
 
 def test_answer_correct():
     random.seed(123)
     game = Game()
     game.generate_question()
-    assert game.submit_answer(11) == True
+    assert game.submit_answer(6) == True
 
 def test_answer_incorrect():
     random.seed(123)
